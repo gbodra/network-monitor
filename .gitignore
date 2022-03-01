@@ -17,3 +17,4 @@
 network-monitor
 subnets.cfg
 network-monitor.db
+.env
