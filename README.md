@@ -23,3 +23,4 @@ To work properly the application has to have the following configuration files:
    1. `TG_TOKEN`: telegram API token
    2. `CHAT_ID`: telegram chat ID
    3. `TG_URL`: telegram API URL
+   4. `TASK_FREQ_MIN`: how often the tool will scan the network and look for new devices

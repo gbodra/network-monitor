@@ -8,9 +8,11 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gbodra/network-monitor/data"
 	"github.com/gbodra/network-monitor/notification"
+	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
 	"github.com/schollz/progressbar/v3"
 )
@@ -61,6 +63,14 @@ func findActiveDevices(ipBase string, idScan uint) []string {
 	return devicesFound
 }
 
+func ScanNetwork(ips []string, idScan uint) {
+	for _, ip := range ips {
+		devices := findActiveDevices(ip, idScan)
+		message := fmt.Sprint("Found ", len(devices), " devices on network ", ip, "\n", strings.Join(devices, "\n"))
+		notification.SendMessageTelegram(message)
+	}
+}
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -73,9 +83,9 @@ func main() {
 
 	idScan := data.InsertScan(&data.Scan{Subnets: strings.Join(ips, ",")})
 
-	for _, ip := range ips {
-		devices := findActiveDevices(ip, idScan)
-		message := fmt.Sprint("Found ", len(devices), " devices on network ", ip, "\n", strings.Join(devices, "\n"))
-		notification.SendMessageTelegram(message)
-	}
+	scheduler := gocron.NewScheduler(time.Local)
+	scheduler.Every(os.Getenv("TASK_FREQ_MIN")).Minutes().Do(ScanNetwork, ips, idScan)
+	scheduler.StartBlocking()
+
+	ScanNetwork(ips, idScan)
 }
