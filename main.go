@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gbodra/network-monitor/data"
 	"github.com/gbodra/network-monitor/notification"
 	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
@@ -41,7 +40,7 @@ func loadConfig() []string {
 	return subnets
 }
 
-func findActiveDevices(ipBase string, idScan uint) []string {
+func findActiveDevices(ipBase string) []string {
 	bar := progressbar.Default(254)
 	var devicesFound []string
 
@@ -52,7 +51,7 @@ func findActiveDevices(ipBase string, idScan uint) []string {
 
 		if !strings.Contains(string(out), "100.0% packet loss") {
 			devicesFound = append(devicesFound, ip)
-			data.InsertHost(&data.Host{IdScan: idScan, Ip: ip})
+			// data.InsertHost(&data.Host{IdScan: idScan, Ip: ip})
 		}
 
 		bar.Add(1)
@@ -63,9 +62,9 @@ func findActiveDevices(ipBase string, idScan uint) []string {
 	return devicesFound
 }
 
-func ScanNetwork(ips []string, idScan uint) {
+func ScanNetwork(ips []string) {
 	for _, ip := range ips {
-		devices := findActiveDevices(ip, idScan)
+		devices := findActiveDevices(ip)
 		message := fmt.Sprint("Found ", len(devices), " devices on network ", ip, "\n", strings.Join(devices, "\n"))
 		notification.SendMessageTelegram(message)
 	}
@@ -83,12 +82,12 @@ func main() {
 
 	ips := loadConfig()
 
-	data.MigrateDb()
+	// data.MigrateDb()
 
-	idScan := data.InsertScan(&data.Scan{Subnets: strings.Join(ips, ",")})
+	// idScan := data.InsertScan(&data.Scan{Subnets: strings.Join(ips, ",")})
 
 	scheduler := gocron.NewScheduler(time.Local)
-	scheduler.Every(os.Getenv("TASK_FREQ")).Do(ScanNetwork, ips, idScan)
+	scheduler.Every(os.Getenv("TASK_FREQ")).Do(ScanNetwork, ips)
 	scheduler.StartBlocking()
 
 	fmt.Println("Press the any key to stop")
