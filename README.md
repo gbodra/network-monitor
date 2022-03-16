@@ -2,9 +2,9 @@
 
 Home Network Monitor is a lightweight cross-platform tool to monitor and notify which devices are connected to your home network.
 
-If you want a simple tool to check from time to time whether there are new devices connecting to your network this is your tool.
+If you want a simple tool to check from time to time whether there are new devices connected to your network this is your tool.
 
-It sends notifications to your Telegram account from time to time with a full report.
+It sends notifications to your Telegram account with a full report.
 
 ## Installation
 
