@@ -71,6 +71,10 @@ func ScanNetwork(ips []string, idScan uint) {
 	}
 }
 
+func PrintMsg() {
+	log.Println("Hello cron")
+}
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -84,8 +88,9 @@ func main() {
 	idScan := data.InsertScan(&data.Scan{Subnets: strings.Join(ips, ",")})
 
 	scheduler := gocron.NewScheduler(time.Local)
-	scheduler.Every(os.Getenv("TASK_FREQ_MIN")).Minutes().Do(ScanNetwork, ips, idScan)
+	scheduler.Every(os.Getenv("TASK_FREQ")).Do(ScanNetwork, ips, idScan)
 	scheduler.StartBlocking()
 
-	ScanNetwork(ips, idScan)
+	fmt.Println("Press the any key to stop")
+	fmt.Scanln()
 }

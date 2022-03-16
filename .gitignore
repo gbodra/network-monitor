@@ -20,3 +20,5 @@ network-monitor-arm
 subnets.cfg
 network-monitor.db
 .env
+
+.vscode/
